@@ -6,7 +6,7 @@ A predictive analysis project to forecast home prices in New Jersey using R prog
 
 - **Objective**: To predict future housing prices in New Jersey using historical data and advanced forecasting models.
 - **Tools**: R, R Markdown
-- **Libraries Used**: List any major R libraries (e.g., `dplyr`, `ggplot2`, `forecast`, etc.)
+- **Libraries Used**: Fpp, Fpp2, TTR, dplyr, ggplot2, forecast.
 
 ## Table of Contents
 1. [Data Collection](#data-collection)
