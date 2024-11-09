@@ -1,0 +1,406 @@
+---
+title: "Midterm_practice"
+author: "Ritik Kumar"
+date: "2024-10-13"
+output: html_document
+---
+
+## 1.import Data
+```{r}
+library(fpp)
+library(fpp2)
+library(TTR)
+library(readr)
+library(ggplot2)
+library(dplyr)
+NJ_MedianListingPrice_AllHomes <- read_csv("C:/Users/malho/Downloads/bf ( ritwik)/NJ_MedianListingPrice_AllHomes.csv")
+NJ_Home_Raw <- NJ_MedianListingPrice_AllHomes$Value
+NJ_Home_TS_Actual <- ts(NJ_Home_Raw,frequency = 12, start = c(1996,4))
+plot(NJ_Home_TS_Actual)
+```
+
+## Plot and Inference
+##### Times Series Plot
+```{r}
+plot(NJ_Home_TS_Actual, main = 'median home prices for House Listing in New Jersey', xlab = 'Year', ylab = 'Median home prices')
+```
+
+* we start with plotting the time series for visualize and understand the data
+
+##### Initial Oberversation 
+* The plot shows that there is an increasing trend in the median home prices starting from year 1996 till around 2006
+* From 2006 till 2012, there has been a decreasing trend in the home prices.
+* From 2012, there has been a steady increasing trend till the year 2017.
+* The data however doesn't appear to show any seasonal variation.
+* If we were to forecast the data, we should be consideing the window from 2014.
+
+##### Considering only a window
+```{r}
+NJ_Home_TS <- window(NJ_Home_TS_Actual, start = 2014)
+plot(NJ_Home_TS, main = 'median home prices for House Listing in New Jersey', xlab = 'Year', ylab = 'Median home prices')
+```
+
+* window function has been used from the year 2014 to forecast the data better.
+*if we consider the whole data that might not be give us the exact forecast.
+* from 2014 it will be more than 3 years data that we are considering and this data should be good enough to be considered for forcasting.
+
+## Central Tendency
+
+##### Min, max, mean, median, 1st and 3rd Quartile values of the times series
+```{r}
+summary(NJ_Home_TS)
+```
+
+* The summary function above gives the min, max, mean, median, 1st and 3rd Quartile values of the times series.
+
+##### Box Plot
+```{r}
+boxplot(NJ_Home_TS, main ='Boxplot for the Median home prices Time Series')
+hist(NJ_Home_TS)
+Acf(NJ_Home_TS)
+```
+
+##### Observations and Inferences 
+* The boxplot shows that there are no outliers in the data.
+* The median is more towards the first quartile.
+* From summary, we can also see that the median value is less then the mean value for the time series.
+*  This means that the data is right skewed. This can be justified seeing the histogram as well.
+* From the ACF plot, we can see that many of the values crossed the confidence intervals, stating there is a trend component in the data.
+* Also, we can see that after 15th lag period, the ACF plot is dipping into the negative values stating seasonality also exists in the data.
+
+## Decomposition
+
+##### Decomposition Plot
+
+```{r}
+stl_decomp <- stl(NJ_Home_TS, s.window = "periodic")
+plot(stl_decomp, main = 'Decomposition Plot')
+```
+
+##### Is the time series seasonal?
+* Yes, the time series is seasonal.
+
+##### •	Is the decomposition additive or multiplicative?
+
+```{r}
+decom <- decompose(NJ_Home_TS)
+decom$type
+```
+
+* The decomposition seems to be additive. 
+* Because, with as trend increases, we do not see any increase in the seasonality. The seasonality appears to be the same throughout.
+
+##### •	If seasonal, what are the values of the seasonal monthly indices? 
+
+```{r}
+decom$figure
+```
+
+##### Observations and Inferences
+
+* From 2014 to 2017, the values of the time series seem to increase throughout.
+* We can see a peak in Sep 2014 and then a dip and Oct 2014 and then continuous increase.
+* Then again a similar case for Mar 2017 and then a dip in Apr 2017 and then a continuous increase.
+
+##### Plausible reasons
+* The plausible reason might be because the influx of international students in September their studies.
+
+##### Seasonality adjusted plot
+```{r}
+plot(NJ_Home_TS, ylab = 'Home Prices')
+lines(seasadj(stl_decomp), col="Red")
+```
+
+* There are minor fluctuations that can be observed after applying seasonal adjustment.
+* With time, these fluctuations will cause deviations and change our forecast. So, it is important to consider the seasonal variation in the data.
+
+## Testing the various Forecasting methods for the given dataset
+
+## Naive Method 
+
+##### Output
+```{r}
+naive_forecast <- naive(NJ_Home_TS)
+plot(naive_forecast)
+```
+
+##### Perform Residual Analysis for this technique. 
+```{r}
+plot(naive_forecast$residuals)
+```
+
+* The residuals appear to have increasing positive values and then peaked in the third quarter of the year 2016 and then dipped down.
+* All the residuals are positive. The residuals do not seem to have a mean at zero.
+
+###### Residuals Histogram
+```{r}
+hist(naive_forecast$residuals)
+```
+
+* The histogram appears to be normally distributed.
+* But the values do not have a mean zero. The histogram appears to be skewed on one side.
+* This means that the data is biased as the mean is not zero.
+
+###### Fitted vs Residual Values
+```{r}
+cbind(Fitted = fitted(naive_forecast), 
+      Residuals = residuals(naive_forecast)) %>%
+  as.data.frame() %>%
+  ggplot( aes(x= Fitted, y= Residuals)) + geom_point()
+```
+
+* The Fitted vs Residuals plot appears to have a trend. The plot slightly shows a straight diagonal line pattern. 
+* This means there is heteroscedasticity in the errors which means that the variance of the residuals may not be constant.
+
+###### Actual vs Residual values
+```{r}
+cbind(Data=NJ_Home_TS,
+      Residuals=residuals(naive_forecast)) %>%
+  as.data.frame() %>%
+  ggplot(aes(x=Data, y=Residuals)) + geom_point()
+```
+
+* Similar to the previous plot, The actual vs Residuals plot also appears not to be random. 
+
+###### ACF of residuals
+```{r}
+Acf(naive_forecast$residuals)
+```
+
+* Values of the Acf have crossed the confidence level meaning there is a trend in the residuals and we have missed some variable in our forecast.
+* The Acf values also show seasonality in the plot and we missed this variable too.
+* Meaning that naive forecast is missing some main variables which we have missed our consideration for the forecast.
+
+##### Accuracy
+```{r}
+accuracy(naive_forecast)
+```
+
+##### Forecast 
+```{r}
+forecast(naive_forecast)
+plot(forecast(naive_forecast))
+```
+
+##### Naive Method Summary
+* The ME, RMSE values are very high indicating that this method may not be the right one to go with.
+* We can consider more forecasting techniques and check if the error values are less than this one.
+* From 2014 to 2017 there is observed to be an increasing trend in the data. So, naive forecast may not be a right way to forecast.
+* Rather, we can try naive method with drift component and that may yield us better forecast.
+
+## Simple Moving Averages
+
+##### Plot the graph for time series. 
+##### Simple Moving average of order 3, 6, and 9
+```{r}
+ma3_forecast = ma(NJ_Home_TS, order = 3)
+ma6_forecast = ma(NJ_Home_TS, order = 6)
+ma9_forecast = ma(NJ_Home_TS, order = 9)
+plot(NJ_Home_TS, main ="Plot along with moving averages")
+lines(ma3_forecast, col='Red')
+lines(ma6_forecast, col='Blue')
+lines(ma9_forecast, col='Green')
+```
+
+##### Observations
+
+* From the plots, it is observed that the higher the order we consider, the smoother the moving average curve in the plot.
+* It can be seen that the Green line above is the smoothest compared to Blue or Red lines.
+* The Red line (order 3) gives the most real data compared to the other two. The higher order averages smoother the plot and do not give the actual values.
+
+## Simple Smoothing
+```{r}
+ses_data = ses(NJ_Home_TS)
+plot(ses_data)
+attributes(ses_data)
+```
+
+```{r}
+summary(ses_data)
+```
+
+##### Observations 
+* Alpha = 0.9999
+* Alpha specifies the coefficient for the level smoothing. Values near 1.0 mean that the latest value has more weight.
+* Initial state: l = 278403.3349 
+* Sigma: 940.7005. Sigma defines the variance in the forecast predicted.
+
+##### Residual Analysis
+```{r}
+plot(ses_data$residuals)
+```
+
+* The residuals appear to have increasing positive values and then peaked in the third quarter of the year 2016 and then dipped down.
+* Most of the residual values appear to be positive and do not have a mean of zero.
+
+###### Histogram plot of residuals
+```{r}
+hist(ses_data$residuals)
+```
+
+* The histogram appears to be normally distributed.
+* But the values do not have a mean zero. The histogram appears to be skewed on one side.
+* If the residual histogram doesnot have the mean to be zero, it means the data is biased.
+
+###### Fitted values vs. residuals
+```{r}
+cbind(Fitted=fitted(ses_data),
+      Residuals=residuals(ses_data)) %>%
+  as.data.frame() %>%
+  ggplot(aes(x=Fitted,y=Residuals)) + geom_point()
+```
+
+* The Fitted vs Residuals plot appears to have a trend. The plot slightly shows a straight diagonal line pattern. 
+* This means there is heteroscedasticity in the errors which means that the variance of the residuals may not be constant.
+
+###### Actual values vs. residuals
+```{r}
+cbind(Data = NJ_Home_TS,
+      Residuals=residuals(ses_data)) %>%
+  as.data.frame() %>%
+  ggplot(aes(x=Data, y=Residuals)) + geom_point()
+```
+
+* Similar to the previous plot, the Actual vs. Residuals plot appears to have some trend in the data.
+
+###### ACF plot of the residuals
+```{r}
+Acf(ses_data$residuals)
+```
+
+* Values of the Acf have crossed the confidence level meaning there is a trend in the residuals and we have missed some variable in our forecast.
+* The Acf values also show seasonality in the plot and we missed this variable too.
+* Meaning that simple smoothing is missing some main variables which we have missed our consideration for the forecast.
+
+##### Accuracy
+```{r}
+accuracy(ses_data)
+```
+
+##### Forecast 
+```{r}
+ses_data
+plot(ses_data)
+```
+
+##### Simple Smoothing Summary
+
+* The ME, RMSE values are very high indicating that this method may not be the right one to go with.
+* We can consider more forecasting techniques and check if the error values are less than this one.
+* From 2014 to 2017 there is observed to be an increasing trend in the data. So, this forecast may not be a right way to forecast.
+* We can try Holtwinters approach as it suits for trend+seasonal time series
+
+##  Holt-Winters 
+```{r}
+Hw_forecast <- hw(NJ_Home_TS, seasonal = "additive")
+plot(forecast(Hw_forecast))
+attributes(Hw_forecast)
+Hw_add <- forecast(Hw_forecast)
+```
+
+* Here, additive Holtwinters method is considered.
+* This is because the seasonality isn't increasing with trend. This is an additive time series.
+
+###### Observations
+```{r}
+Hw_add$model
+```
+
+* Alpha = 0.8088. Alpha specifies the coefficient for the level smoothing in Holtwinters.
+* Beta = 00952. Beta specifies the coefficient for the trend smoothing in Holtwinters. 
+* Gamma = 0.1901. Gamma specifies the coefficient for the seasonal smoothing in Holtwinters.
+* Values 1.0 means that the latest value has highest weight.
+* Initial states:
+    l = 278262.0665 
+    b = 562.8731 
+    s = 155.2537 257.43 199.9368 112.0836 924.0918 418.237
+           -164.0516 -47.7212 -248.0368 -609.1925 45.5616 -1043.592
+* Sigma = 878.616. Sigma defines the variance of the forecast values.
+
+##### Residual Analysis
+```{r}
+plot(Hw_add$residuals)
+```
+
+* The residuals appear to be random and also the mean looks to be near zero. We can check this with histogram.
+* We can observe a couple of up and downs throughout. But even they did not show and growing residual pattern.
+
+###### Histogram plot of residuals
+```{r}
+hist(Hw_add$residuals)
+```
+
+* The histogram appears to be normally distributed.
+* And the mean is near zero. Indicating the data is not biased.
+* Overall, comparing the previous forecasts, this forecast appears to be the best till now. 
+
+
+###### Fitted values vs. residuals
+```{r}
+cbind(Fitted = fitted(Hw_add),
+      Residuals=residuals(Hw_add)) %>%
+  as.data.frame() %>%
+  ggplot(aes(x=Fitted, y=Residuals)) + geom_point()
+```
+
+* The Fitted vs Residuals plot appears not to have any trend.
+* This means there is no heteroscedasticity in the errors which means that the variance of the residuals is constant.
+
+
+###### Actual values vs. residuals
+```{r}
+cbind(Data= NJ_Home_TS,
+      Residuals=residuals(Hw_add)) %>%
+  as.data.frame() %>%
+  ggplot(aes(x=Data, y=Residuals)) + geom_point()
+```
+
+* Similar to the previous plot, the Actual vs. Residuals plot appears to be random.
+
+###### ACF plot of the residuals
+```{r}
+Acf(Hw_add$residuals)
+```
+
+* In the Acf plot, none of the values crossed the confidence levels. It appears to be white noice.
+* This signifies that the forecast is a good forecast.
+* This proves to be the best forecast comparing all the previous ones tested.
+
+##### Accuracy
+```{r}
+accuracy(Hw_add)
+```
+
+##### Forecast 
+```{r}
+forecast(Hw_forecast)
+plot(forecast(Hw_forecast))
+```
+
+##### Holtwinters Summary
+* The ME, RMSE values are quite low compared to any of our previous forecasts.
+* Holwinters is a better forecast compared to naive and simple smoothing.
+* Holtwinters appears to be the best forecast considering all the previous forecast methods.
+* However, this forecast can still be improved as we can try forecasting using ARIMA models.
+
+## Accuracy Summary
+```{r}
+accuracy(naive_forecast)
+accuracy(ses_data)
+accuracy(Hw_add)
+```
+
+##### Best & Worst Forecasts
+
+* To start with, there is nothing like best or worst forecast.
+* Considering the accuracy data above, HoltWinters forecast seems to fit the time series the best as it has the least error values.
+* And naive forecast seems to be the worst as it has the largest ME and RMSE values.
+
+## Conclusion
+
+* The data seemed to have trend and seasonality initially and we checked the same with Acf and confirmed it.
+* Based on the three forecasting methods naive, simple smoothing, and HoltWinters, we can see that HoltWinters forecast provides to be the better forecasting method in this case.
+* This is because the forecast fits perfectly and also the error values are quiet low for HoltWinters forecast.
+* Additionally residuals in HoltWinters appear to be random and the all the ACF values of residuals are within the confidence interval.
+* This shows that our hypothesis is correct based on the accuracy of all the models.
+* Based on the analysis and forecast, the time series will increase over the next year and the next 2 years.
