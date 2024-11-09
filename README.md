@@ -22,22 +22,22 @@ Briefly describe the dataset used (source, time period, key columns).
 
 ## Data Preprocessing
 
-Explain any transformations, feature engineering, or cleaning steps performed.
+Explained about transformations, feature engineering, or cleaning steps performed.
 
 ## Modeling
 
-Describe the models you explored, such as:
-- **Baseline Model**: [e.g., Linear Regression]
-- **Advanced Model**: [e.g., ARIMA, LSTM]
-Mention any model evaluation metrics you used.
+- **Baseline Model**: Naive Model, Moving Average Model, Simple Smoothing Model, Holt Winters Model
+- **Advanced Model**: Decomposition Based Model- Addictive 
 
 ## Results
 
 Model Performance Summary
+
 Naive Forecast:
 
 ME: 772.093, RMSE: 929.6161, MAE: 790.6977
 MAPE: 0.2678, MASE: 0.0855, ACF1: 0.6471
+
 This model exhibited the highest Mean Error (ME) and Root Mean Square Error (RMSE), indicating it was the least accurate among the models.
 Simple Exponential Smoothing (SES):
 
@@ -48,8 +48,11 @@ Holt-Winters (HW) Additive Model:
 
 ME: 82.1111, RMSE: 700.8931, MAE: 543.4792
 MAPE: 0.1859, MASE: 0.0588, ACF1: 0.2658
+
 The HW model produced the lowest error rates, indicating it was the most accurate in forecasting home prices.
+
 Analysis & Conclusion
+
 Best Forecast: Holt-Winters’ model, as it has the lowest error rates across all metrics, suggesting it captures the seasonality and trend effectively.
 Forecast Trend: The time series analysis indicates an upward trend in home prices over the next 1–2 years.
 Residual Analysis: The residuals in Holt-Winters appear random, with all ACF values within the confidence interval, affirming the model’s robustness in capturing data patterns.
