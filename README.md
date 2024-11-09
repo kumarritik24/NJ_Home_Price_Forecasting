@@ -18,7 +18,7 @@ A predictive analysis project to forecast home prices in New Jersey using R prog
 
 ## Data Collection
 
-Briefly describe the dataset used (source, time period, key columns). Mention if any data cleaning steps were necessary.
+Briefly describe the dataset used (source, time period, key columns).
 
 ## Data Preprocessing
 
