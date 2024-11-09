@@ -39,11 +39,14 @@ ME: 772.093, RMSE: 929.6161, MAE: 790.6977
 MAPE: 0.2678, MASE: 0.0855, ACF1: 0.6471
 
 This model exhibited the highest Mean Error (ME) and Root Mean Square Error (RMSE), indicating it was the least accurate among the models.
+
 Simple Exponential Smoothing (SES):
 
 ME: 754.5426, RMSE: 919.0724, MAE: 772.871
 MAPE: 0.2618, MASE: 0.0836, ACF1: 0.6453
+
 SES improved slightly over the naive forecast, showing a small reduction in RMSE and other error metrics.
+
 Holt-Winters (HW) Additive Model:
 
 ME: 82.1111, RMSE: 700.8931, MAE: 543.4792
@@ -54,7 +57,9 @@ The HW model produced the lowest error rates, indicating it was the most accurat
 Analysis & Conclusion
 
 Best Forecast: Holt-Winters’ model, as it has the lowest error rates across all metrics, suggesting it captures the seasonality and trend effectively.
+
 Forecast Trend: The time series analysis indicates an upward trend in home prices over the next 1–2 years.
+
 Residual Analysis: The residuals in Holt-Winters appear random, with all ACF values within the confidence interval, affirming the model’s robustness in capturing data patterns.
 
 ## Usage
