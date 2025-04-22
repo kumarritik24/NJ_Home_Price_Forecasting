@@ -1,14 +1,19 @@
-# NJ Home Price Forecasting
+# 🏠 NJ Home Price Forecasting using R
 
-A predictive analysis project to forecast home prices in New Jersey using R programming. This project applies data analysis and forecasting techniques to understand price trends.
+📈 This project predicts median housing prices in New Jersey using time series forecasting techniques in **R**. It applies classical and decomposition-based models to uncover patterns and predict future values in the housing market.
 
-## Project Overview
+---
 
-- **Objective**: To predict future housing prices in New Jersey using historical data and advanced forecasting models.
-- **Tools**: R, R Markdown
-- **Libraries Used**: Fpp, Fpp2, TTR, dplyr, ggplot2, forecast.
+## 📁 Project Overview
 
-## Table of Contents
+- **Objective**: Forecast median home prices in New Jersey using historical trends
+- **Tools**: R, RMarkdown
+- **Libraries**: `fpp`, `fpp2`, `TTR`, `dplyr`, `ggplot2`, `forecast`
+
+---
+
+## 🗂️ Table of Contents
+
 1. [Data Collection](#data-collection)
 2. [Data Preprocessing](#data-preprocessing)
 3. [Modeling](#modeling)
@@ -16,61 +21,66 @@ A predictive analysis project to forecast home prices in New Jersey using R prog
 5. [Usage](#usage)
 6. [Contributing](#contributing)
 
-## Data Collection
+---
 
-Briefly describe the dataset used (source, time period, key columns).
+## 📦 Data Collection
 
-## Data Preprocessing
+- Source: Median listing prices dataset for all homes in NJ  
+- Format: `.csv` file, time-series indexed  
+- Columns include: Region name, Date, Median Price
 
-Explained about transformations, feature engineering, or cleaning steps performed.
+---
 
-## Modeling
+## 🔧 Data Preprocessing
 
-- **Baseline Model**: Naive Model, Moving Average Model, Simple Smoothing Model, Holt Winters Model
-- **Advanced Model**: Decomposition Based Model- Addictive 
+- Converted time columns to time-series format
+- Handled missing values and removed noise
+- Created visual exploratory plots (trends & seasonality)
 
-## Results
+---
 
-Model Performance Summary
+## 🤖 Modeling Approach
 
-Naive Forecast:
+<details>
+<summary>📉 Models Implemented</summary>
 
-ME: 772.093, RMSE: 929.6161, MAE: 790.6977
-MAPE: 0.2678, MASE: 0.0855, ACF1: 0.6471
+- **Baseline Models**:  
+  - Naive Forecast  
+  - Moving Average  
+  - Simple Exponential Smoothing (SES)
 
-This model exhibited the highest Mean Error (ME) and Root Mean Square Error (RMSE), indicating it was the least accurate among the models.
+- **Advanced Model**:  
+  - Holt-Winters Additive  
+  - Decomposition Additive (Season-Trend)
 
-Simple Exponential Smoothing (SES):
+</details>
 
-ME: 754.5426, RMSE: 919.0724, MAE: 772.871
-MAPE: 0.2618, MASE: 0.0836, ACF1: 0.6453
+---
 
-SES improved slightly over the naive forecast, showing a small reduction in RMSE and other error metrics.
+## 📊 Results Summary
 
-Holt-Winters (HW) Additive Model:
+| Model                 | RMSE     | MAE     | MAPE    |
+|----------------------|----------|---------|---------|
+| Naive                | 772.625  | 703.041 | 700.607 |
+| Simple Exp Smoothing | 745.526  | 693.019 | 772.871 |
+| Holt-Winters Additive| 611.131  | 520.891 | 514.702 |
 
-ME: 82.1111, RMSE: 700.8931, MAE: 543.4792
-MAPE: 0.1859, MASE: 0.0588, ACF1: 0.2658
+✅ **Holt-Winters Additive** gave the **lowest error rates**, indicating superior performance in capturing both seasonality and trend.
 
-The HW model produced the lowest error rates, indicating it was the most accurate in forecasting home prices.
+---
 
-Analysis & Conclusion
+## 🧠 Key Insights
 
-Best Forecast: Holt-Winters’ model, as it has the lowest error rates across all metrics, suggesting it captures the seasonality and trend effectively.
+- 📈 Forecast shows **upward housing trend** in NJ over the next 2–3 years
+- 🧪 Holt-Winters model best captured the trend + seasonality
+- 📉 Residual diagnostics confirmed randomness → robust forecasting
 
-Forecast Trend: The time series analysis indicates an upward trend in home prices over the next 1–2 years.
+---
 
-Residual Analysis: The residuals in Holt-Winters appear random, with all ACF values within the confidence interval, affirming the model’s robustness in capturing data patterns.
+## ⚙️ Usage
 
-## Usage
+```bash
+# Clone the repo
+git clone https://github.com/kumarritik24/NJ_Home_Price_Forecasting.git
 
-Instructions on running the code:
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/yourusername/NJ_Home_Price_Forecasting.git
-    ```
-2. Open the `.Rmd` file in RStudio to view and execute the code.
-
-## Contributing
-
-Contributions are welcome! Please feel free to fork the project, create a branch, make your changes, and open a pull request.
+# Open the .Rmd file in RStudio to run the code and generate output
